@@ -1,0 +1,334 @@
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello World!");
+    }
+}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>CodePhrase Messenger • Pro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #1a1a2e;
+      color: #fff;
+      padding: 15px;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: #16213e;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    h1 {
+      color: #00f5d4;
+      margin-bottom: 25px;
+      text-align: center;
+      font-size: 1.8rem;
+    }
+    .field-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #a8dadc;
+      font-weight: 500;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      background: #0f3460;
+      color: #fff;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #4cc9f0;
+    }
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+    button {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 12px;
+      transition: opacity 0.2s;
+    }
+    button:not(:disabled):hover {
+      opacity: 0.9;
+    }
+    button:disabled {
+      background: #555;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    #generateBtn { background: #4cc9f0; color: #1a1a2e; }
+    #sendBtn { background: #4361ee; color: #fff; }
+    #copyBtn { background: #f72585; color: #fff; }
+    .preview-box {
+      margin: 20px 0;
+      padding: 18px;
+      background: #0f3460;
+      border-radius: 8px;
+      display: none;
+      border-left: 4px solid #00f5d4;
+    }
+    .preview-box h3 {
+      color: #a8dadc;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+    }
+    .preview-box p {
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+    .phrase-text {
+      color: #00f5d4;
+      font-weight: bold;
+      word-break: break-all;
+    }
+    .status-box {
+      margin: 15px 0;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      display: none;
+      font-weight: 500;
+      white-space: pre-line;
+    }
+    .success { background: #00b4d8; color: #1a1a2e; }
+    .error { background: #e63946; color: #fff; }
+    .dictionary {
+      margin-top: 30px;
+      padding: 18px;
+      background: #0f3460;
+      border-radius: 8px;
+    }
+    .dictionary h3 {
+      color: #a8dadc;
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+    }
+    .dict-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 8px;
+    }
+    .dict-item {
+      padding: 5px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 4px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Code ↔ Phrase Messenger</h1>
+
+    <!-- 12-Digit Input -->
+    <div class="field-group">
+      <label for="codeInput">Enter 12-Digit Numeric Code:</label>
+      <input 
+        type="text" 
+        id="codeInput" 
+        placeholder="e.g., 123456789012" 
+        maxlength="12"
+        inputmode="numeric"
+        autocomplete="off"
+      >
+      <small style="color: #a8dadc; margin-top: 5px; display: block;">Only numbers allowed</small>
+    </div>
+
+    <!-- Generate Button -->
+    <button id="generateBtn" disabled>Generate Secret Phrase</button>
+
+    <!-- Preview Area -->
+    <div class="preview-box" id="previewBox">
+      <h3>Message Preview:</h3>
+      <p><span style="color: #a8dadc;">Custom Text:</span> <span id="customMsgPreview">No custom message added</span></p>
+      <p><span style="color: #a8dadc;">Secret Phrase:</span> <span id="phrasePreview" class="phrase-text"></span></p>
+    </div>
+
+    <!-- Send/Copy Section -->
+    <div id="actionSection" style="display: none;">
+      <div class="field-group">
+        <label for="recipientInput">Recipient ID (Phone/Email/Username):</label>
+        <input 
+          type="text" 
+          id="recipientInput" 
+          placeholder="e.g., +2348012345678 or user@example.com"
+          autocomplete="off"
+        >
+      </div>
+
+      <div class="field-group">
+        <label for="customMsgInput">Your Custom Message:</label>
+        <textarea 
+          id="customMsgInput" 
+          placeholder="Type your message here (optional)..."></textarea>
+      </div>
+
+      <button id="copyBtn">Copy Full Message</button>
+      <button id="sendBtn" disabled>Send Message</button>
+    </div>
+
+    <!-- Status Box -->
+    <div class="status-box" id="statusBox"></div>
+
+    <!-- Digit-Word Dictionary -->
+    <div class="dictionary">
+      <h3>Digit → Word Mapping:</h3>
+      <div class="dict-grid">
+        <div class="dict-item">0 = Owl</div>
+        <div class="dict-item">1 = Apple</div>
+        <div class="dict-item">2 = Banana</div>
+        <div class="dict-item">3 = Cherry</div>
+        <div class="dict-item">4 = Delta</div>
+        <div class="dict-item">5 = Eagle</div>
+        <div class="dict-item">6 = Fig</div>
+        <div class="dict-item">7 = Grape</div>
+        <div class="dict-item">8 = Hazel</div>
+        <div class="dict-item">9 = Iris</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // DOM Elements
+    const codeInput = document.getElementById('codeInput');
+    const generateBtn = document.getElementById('generateBtn');
+    const previewBox = document.getElementById('previewBox');
+    const customMsgPreview = document.getElementById('customMsgPreview');
+    const phrasePreview = document.getElementById('phrasePreview');
+    const actionSection = document.getElementById('actionSection');
+    const recipientInput = document.getElementById('recipientInput');
+    const customMsgInput = document.getElementById('customMsgInput');
+    const copyBtn = document.getElementById('copyBtn');
+    const sendBtn = document.getElementById('sendBtn');
+    const statusBox = document.getElementById('statusBox');
+
+    // Fixed Digit-to-Word Mapping
+    const WORD_MAP = ["Owl", "Apple", "Banana", "Cherry", "Delta", "Eagle", "Fig", "Grape", "Hazel", "Iris"];
+
+    // --- Input Validation & Button Enabling ---
+    codeInput.addEventListener('input', () => {
+      // Filter non-numeric characters and enforce 12 digits
+      codeInput.value = codeInput.value.replace(/[^0-9]/g, '').slice(0, 12);
+      // Enable generate button only if input is exactly 12 digits
+      generateBtn.disabled = codeInput.value.length !== 12;
+      // Reset UI when code changes
+      resetPostGenerateUI();
+    });
+
+    recipientInput.addEventListener('input', () => {
+      // Enable send button only if recipient is not empty (trimmed)
+      sendBtn.disabled = recipientInput.value.trim().length === 0;
+    });
+
+    customMsgInput.addEventListener('input', () => {
+      // Update preview as user types custom message
+      customMsgPreview.textContent = customMsgInput.value.trim() || "No custom message added";
+    });
+
+    // --- Core Functions ---
+    function resetPostGenerateUI() {
+      previewBox.style.display = 'none';
+      actionSection.style.display = 'none';
+      hideStatus();
+    }
+
+    function showStatus(message, type) {
+      statusBox.textContent = message;
+      statusBox.className = `status-box ${type}`;
+      statusBox.style.display = 'block';
+      // Auto-hide status after 5 seconds
+      setTimeout(hideStatus, 5000);
+    }
+
+    function hideStatus() {
+      statusBox.style.display = 'none';
+    }
+
+    // --- Generate Phrase Logic ---
+    generateBtn.addEventListener('click', () => {
+      try {
+        let secretPhrase = "";
+        // Build phrase from each digit
+        for (const digit of codeInput.value) {
+          secretPhrase += `${WORD_MAP[parseInt(digit, 10)]} `;
+        }
+        // Update preview
+        phrasePreview.textContent = secretPhrase.trim();
+        customMsgPreview.textContent = customMsgInput.value.trim() || "No custom message added";
+        // Show UI sections
+        previewBox.style.display = 'block';
+        actionSection.style.display = 'block';
+        showStatus("✅ Secret phrase generated successfully!", "success");
+      } catch (error) {
+        showStatus(`❌ Error generating phrase: ${error.message}`, "error");
+        console.error('Generation Error:', error);
+      }
+    });
+
+    // --- Copy to Clipboard Logic (with fallback) ---
+    copyBtn.addEventListener('click', async () => {
+      const fullMessage = `${customMsgPreview.textContent}\n${phrasePreview.textContent}`;
+      try {
+        if (navigator.clipboard) {
+          await navigator.clipboard.writeText(fullMessage);
+        } else {
+          // Fallback for older browsers
+          const textArea = document.createElement('textarea');
+          textArea.value = fullMessage;
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+        }
+        showStatus("✅ Message copied to clipboard!", "success");
+      } catch (error) {
+        showStatus("❌ Copy failed - please select and copy manually!", "error");
+        console.error('Copy Error:', error);
+      }
+    });
+
+    // --- Simulate Send Logic ---
+    sendBtn.addEventListener('click', () => {
+      const fullMessage = `${customMsgInput.value.trim() || "No custom message added"}\n${phrasePreview.textContent}`;
+      const recipient = recipientInput.value.trim();
+
+      // Show loading state
+      sendBtn.disabled = true;
+      sendBtn.textContent = "Sending...";
+      hideStatus();
+
+      // Simulate API call (2 seconds delay)
+      setTimeout(() => {
+        showStatus(`✅ Message sent to ${recipient}!\n\n${fullMessage}`, "success");
+        sendBtn.textContent = "Send Message";
+        sendBtn.disabled = false;
+      }, 2000);
+    });
+
+    // --- Initialize UI ---
+    resetPostGenerateUI();
+  </script>
+</body>
+</html>
